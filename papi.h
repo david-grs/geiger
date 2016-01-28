@@ -6,7 +6,7 @@
 #include <array>
 #include <string>
 
-namespace cpp
+namespace benchmark
 {
 
 template <std::size_t _SizeT>
@@ -68,6 +68,6 @@ template <int... _EventsT> const std::array<std::string, papi_wrapper<_EventsT..
 
 typedef papi_wrapper<PAPI_L1_DCM, PAPI_L2_DCM, PAPI_L3_TCM> cache_profiler;
 typedef papi_wrapper<PAPI_TOT_INS, PAPI_TOT_CYC, PAPI_BR_MSP> instr_profiler;
-	
+
 }
 
