@@ -1,11 +1,11 @@
 #include "time.h"
 
 #include <chrono>
+#include <thread>
 
 extern "C"
 {
 	#include <time.h>
-	#include <unistd.h>
 }
 
 namespace benchmark
@@ -29,7 +29,7 @@ void init()
 	clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
 	uint64_t rdtsc_start = detail::rdtsc();
-	sleep(1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	uint64_t rdtsc_end = detail::rdtsc();
 
 	clock_gettime(CLOCK_MONOTONIC_RAW, &end);
