@@ -16,16 +16,25 @@
 namespace benchmark
 {
 
-struct report
-{
-	void print()
-	{
-	}
-};
-
 struct test
 {
-	void run() const
+	struct report
+	{
+		report(long iterations, int64_t cycles)
+		: m_iterations(iterations), m_cycles(cycles) {}
+
+		long    iteration_count() const { return m_iterations; }
+		int64_t total_cycles() const { return m_cycles; }
+
+		double  cycles_per_task() const { return m_cycles / (double)m_iterations; }
+		std::chrono::nanoseconds time_per_task() const { return chrono::from_cycles(cycles_per_task()); }
+
+	private:
+		long    m_iterations;
+		int64_t m_cycles;
+	};
+
+	report run() const
 	{
 		using namespace boost::accumulators;
 		accumulator_set<int64_t, stats<tag::mean>> acc;
@@ -52,9 +61,10 @@ struct test
 		for (long i = 0; i < iterations; ++i)
 			m_callable();
 
-		std::cout << "Ran " << iterations << " iterations during " << std::chrono::duration_cast<std::chrono::milliseconds>(c.elapsed_time()).count() << " ms" << std::endl;
-		std::cout << "Time per task: " << chrono::from_cycles(c.elapsed() / (double)iterations).count() << " ns" << std::endl;
+		return {iterations, c.elapsed()};
 	}
+
+	const std::string& name() const { return m_name; }
 
 	std::string m_name;
 	std::function<void()> m_callable;
@@ -62,6 +72,11 @@ struct test
 
 struct suite
 {
+	typedef std::vector<std::pair<std::string, test::report>> report;
+
+	typedef std::function<void(const std::string&, const test::report&)> test_complete_t;
+	typedef std::function<void(const suite::report&)> suite_complete_t;
+
 	suite& add(const std::string& name,
 			   std::function<void()> test)
 	{
@@ -69,7 +84,13 @@ struct suite
 		return *this;
 	}
 
-	suite& on_complete(std::function<void()> f)
+	suite& on_test_complete(test_complete_t f)
+	{
+		m_on_test_complete = f;
+		return *this;
+	}
+
+	suite& on_complete(suite_complete_t f)
 	{
 		m_on_complete = f;
 		return *this;
@@ -77,11 +98,19 @@ struct suite
 
 	suite& run()
 	{
+		report r;
+
 		for (const auto& p : m_tests)
-			p.run();
+		{
+			test::report test_report = p.run();
+			r.emplace_back(p.name(), test_report);
+
+			if (m_on_test_complete)
+				m_on_test_complete(p.name(), test_report);
+		}
 
 		if (m_on_complete)
-			m_on_complete();
+			m_on_complete(r);
 
 		return *this;
 	}
@@ -89,13 +118,14 @@ struct suite
 	template <int... _EventsT>
 	suite& run_perf_counters()
 	{
-		m_papi_wrappers.emplace_back(new papi_wrapper<_EventsT...>());
+	//	m_papi_wrappers.emplace_back(new papi_wrapper<_EventsT...>());
 		return *this;
 	}
 
-	std::function<void()> m_on_complete;
 	std::vector<test> m_tests;
-	std::vector<std::unique_ptr<papi_wrapper_base>> m_papi_wrappers;
+
+	test_complete_t m_on_test_complete;
+	suite_complete_t m_on_complete;
 };
 
 }
