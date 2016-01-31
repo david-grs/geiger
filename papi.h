@@ -22,20 +22,26 @@ static auto get_papi_event_names(const std::array<int, _SizeT>& events)
 	return ret;
 }
 
+struct papi_wrapper_base
+{
+	virtual void start() =0;
+	virtual void stop() =0;
+};
+
 template <int... _EventsT>
-struct papi_wrapper
+struct papi_wrapper : public papi_wrapper_base
 {
 	static constexpr int events_count = sizeof...(_EventsT);
 	typedef std::array<long long, events_count> counters_type;
 
-	void start()
+	void start() override
 	{
 		int ret;
 		if ((ret = ::PAPI_start_counters(const_cast<int*>(s_events.data()), events_count)) != PAPI_OK)
 			throw std::runtime_error(PAPI_strerror(ret));
 	}
 
-	void stop()
+	void stop() override
 	{
 		int ret;
 
