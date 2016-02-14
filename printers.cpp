@@ -12,15 +12,15 @@ namespace benchmark
 namespace printers
 {
 
-void console::on_start(const suite& s)
+void console::on_start(const suite_base& s)
 {
-	std::vector<std::string> names = s.test_names();
+	std::vector<std::reference_wrapper<const std::string>> names = s.test_names();
 
 	auto it = std::max_element(names.begin(),
 							   names.end(),
 							   [](const std::string& s1, const std::string& s2) { return s1.size() < s2.size(); });
 
-	m_first_col_width = it->size();
+	m_first_col_width = it->get().size();
 
 	int width = fprintf(stdout, "%-*s %10s %10s", m_first_col_width, "Test", "Time (ns)", "Iterations\n");
 	std::cout << std::string(width - 1, '-') << std::endl;

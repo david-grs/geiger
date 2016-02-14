@@ -8,10 +8,15 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 
+#include <boost/fusion/adapted/std_tuple.hpp>
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
+
 #include <functional>
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
+#include <tuple>
 
 namespace benchmark
 {
@@ -46,14 +51,17 @@ private:
 	std::string m_name;
 };
 
-template <typename _CallableT>
+template <typename _CallableT, typename... _PAPIWrappersT>
 struct test : public test_base
 {
 	test(const std::string& name, _CallableT&& callable = _CallableT())
-	 : test_base(name), m_callable(callable) {}
+	 : test_base(name),
+	   m_callable(callable) {}
 
 	test_report run() const override
 	{
+		std::tuple<_PAPIWrappersT...> papi_wrappers;
+
 		using namespace boost::accumulators;
 		accumulator_set<int64_t, stats<tag::mean>> acc;
 
@@ -74,12 +82,34 @@ struct test : public test_base
 
 		long iterations = std::chrono::seconds(1) / chrono::from_cycles(mean(acc));
 
-		c.restart();
+		auto run_benchmark = [&]() -> auto
+		{
+			c.restart();
 
-		for (long i = 0; i < iterations; ++i)
-			m_callable();
+			for (long i = 0; i < iterations; ++i)
+				m_callable();
 
-		return {iterations, c.elapsed()};
+			return c.elapsed();
+		};
+
+		constexpr long papi_wrapppers_count = static_cast<long>(std::tuple_size<decltype(papi_wrappers)>::value);
+
+		if (papi_wrapppers_count == 0)
+		{
+			int64_t cycles = run_benchmark();
+			return {iterations, cycles};
+		}
+
+		int64_t cycles = 0;
+
+		boost::fusion::for_each(papi_wrappers, [&](auto& papi)
+		{
+			papi.start();
+			cycles += run_benchmark();
+			papi.stop();
+		});
+
+		return {iterations * papi_wrapppers_count, cycles};
 	}
 
 private:
@@ -91,7 +121,15 @@ struct suite_report
 	std::vector<std::pair<std::string, test_report>> tests;
 };
 
-struct suite
+struct suite_base
+{
+	virtual ~suite_base() {}
+
+	virtual std::vector<std::reference_wrapper<const std::string>> test_names() const =0;
+};
+
+template <typename... _PAPIWrappersT>
+struct suite : public suite_base
 {
 	typedef std::function<void(const std::string&, const test_report&)> test_complete_t;
 	typedef std::function<void(const suite_report&)> suite_complete_t;
@@ -100,7 +138,7 @@ struct suite
 	suite& add(const std::string& name,
 			   _CallableT&& callable)
 	{
-		m_tests.emplace_back(new test<_CallableT>(name, std::move(callable)));
+		m_tests.emplace_back(new test<_CallableT, _PAPIWrappersT...>(name, std::move(callable)));
 		return *this;
 	}
 
@@ -111,14 +149,27 @@ struct suite
 		return *this;
 	}
 
-	std::vector<std::string> test_names() const
+	std::vector<std::reference_wrapper<const std::string>> test_names() const override
 	{
-		std::vector<std::string> v;
+		std::vector<std::reference_wrapper<const std::string>> v;
+
 		for (const auto& test : m_tests)
 			v.push_back(test->name());
 
 		return v;
 	}
+
+	/*
+	auto papi_counter_names() const
+	{
+		std::vector<std::reference_wrapper<const std::string>> v;
+
+		for (const auto& papi_wrapper : m_papi_wrappers)
+			v.push_back(papi_wrapper->name());
+
+		return v;
+	}
+	*/
 
 	suite& on_test_complete(test_complete_t f)
 	{
@@ -154,13 +205,6 @@ struct suite
 		if (m_on_complete)
 			m_on_complete(r);
 
-		return *this;
-	}
-
-	template <int... _EventsT>
-	suite& run_perf_counters()
-	{
-	//	m_papi_wrappers.emplace_back(new papi_wrapper<_EventsT...>());
 		return *this;
 	}
 
