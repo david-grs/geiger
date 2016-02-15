@@ -9,17 +9,12 @@
 namespace benchmark
 {
 
-template <std::size_t _SizeT>
-static auto get_papi_event_names(const std::array<int, _SizeT>& events)
+static std::string get_papi_event_name(int event_code)
 {
-	std::array<std::string, _SizeT> ret;
-	for (std::size_t i = 0; i < ret.size(); ++i)
-	{
-			char event_code[PAPI_MAX_STR_LEN];
-			PAPI_event_code_to_name(events[i], event_code);
-			ret[i] = event_code;
-	}
-	return ret;
+	char event_name[PAPI_MAX_STR_LEN];
+	PAPI_event_code_to_name(event_code, event_name);
+
+	return event_name;
 }
 
 struct papi_wrapper_base
@@ -68,6 +63,16 @@ private:
 };
 
 template <int... _EventsT> constexpr std::array<int, papi_wrapper<_EventsT...>::events_count> papi_wrapper<_EventsT...>::s_events;
+
+template <std::size_t _SizeT>
+static auto get_papi_event_names(const std::array<int, _SizeT>& events)
+{
+	std::array<std::string, _SizeT> ret;
+	for (std::size_t i = 0; i < ret.size(); ++i)
+		ret[i] = get_papi_event_name(events[i]);
+
+	return ret;
+}
 
 template <int... _EventsT> const std::array<std::string, papi_wrapper<_EventsT...>::events_count> papi_wrapper<_EventsT...>::s_event_names
 	= get_papi_event_names(papi_wrapper<_EventsT...>::s_events);
