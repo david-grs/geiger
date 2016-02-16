@@ -23,8 +23,8 @@ namespace benchmark
 
 struct test_report
 {
-	test_report(long iterations, int64_t cycles)
-	: m_iterations(iterations), m_cycles(cycles) {}
+	test_report(long iterations, int64_t cycles, std::vector<long long>&& papi_counters = {})
+	: m_iterations(iterations), m_cycles(cycles), m_papi_counters(papi_counters) {}
 
 	long    iteration_count() const { return m_iterations; }
 	int64_t total_cycles() const { return m_cycles; }
@@ -32,9 +32,12 @@ struct test_report
 	double  cycles_per_task() const { return m_cycles / (double)m_iterations; }
 	std::chrono::nanoseconds time_per_task() const { return chrono::from_cycles(cycles_per_task()); }
 
+	const std::vector<long long>& papi_counters() const { return m_papi_counters; }
+
 private:
 	long    m_iterations;
 	int64_t m_cycles;
+	std::vector<long long> m_papi_counters;
 };
 
 struct test_base
@@ -73,14 +76,14 @@ struct test : public test_base
 
 		chrono c;
 
-		for (int i = 0; i < 1e3 && sampling_chrono.elapsed_time() < max_sampling_time; ++i)
+		for (int i = 0; i < 1e6 && sampling_chrono.elapsed_time() < max_sampling_time; ++i)
 		{
 			c.start();
 			m_callable();
 			acc(c.elapsed());
 		}
 
-		long iterations = std::chrono::seconds(1) / chrono::from_cycles(mean(acc));
+		long iterations = std::chrono::milliseconds(1) / chrono::from_cycles(mean(acc));
 
 		auto run_benchmark = [&]() -> auto
 		{
@@ -92,24 +95,55 @@ struct test : public test_base
 			return c.elapsed();
 		};
 
+		auto next_iterations_count = [&](int64_t cycles)
+		{
+			iterations = std::lround(iterations / ((double)cycles / chrono::to_cycles(std::chrono::milliseconds(1))));
+		};
+
 		constexpr long papi_wrapppers_count = static_cast<long>(std::tuple_size<decltype(papi_wrappers)>::value);
+
+		int64_t total_cycles = 0;
+		long total_iterations = 0;
 
 		if (papi_wrapppers_count == 0)
 		{
-			int64_t cycles = run_benchmark();
-			return {iterations, cycles};
+			for (int i = 0; i < 1e3; ++i)
+			{
+				int64_t cycles = run_benchmark();
+
+				total_iterations += iterations;
+				total_cycles += cycles;
+				next_iterations_count(cycles);
+			}
+
+			return {total_iterations, total_cycles};
 		}
 
-		int64_t cycles = 0;
+		std::vector<long long> counters;
 
 		boost::fusion::for_each(papi_wrappers, [&](auto& papi)
 		{
-			papi.start();
-			cycles += run_benchmark();
-			papi.stop();
+			counters.resize(counters.size() + papi.get_counters().size());
+			int j = counters.size() - papi.get_counters().size();
+
+			for (int i = 0; i < 1e3; ++i)
+			{
+				papi.start();
+				int64_t cycles = run_benchmark();
+				papi.stop();
+
+				total_iterations += iterations;
+				total_cycles += cycles;
+				next_iterations_count(cycles);
+
+				const auto& curr_counters = papi.get_counters();
+
+				for (int i = 0; i < curr_counters.size(); ++i)
+					counters[i + j] += curr_counters[i];
+			}
 		});
 
-		return {iterations * papi_wrapppers_count, cycles};
+		return {total_iterations, total_cycles, std::move(counters)};
 	}
 
 private:
@@ -126,6 +160,8 @@ struct suite_base
 	virtual ~suite_base() {}
 
 	virtual std::vector<std::reference_wrapper<const std::string>> test_names() const =0;
+	virtual std::vector<int> papi_events() const =0;
+
 };
 
 template <typename... _PAPIWrappersT>
@@ -159,17 +195,19 @@ struct suite : public suite_base
 		return v;
 	}
 
-	/*
-	auto papi_counter_names() const
+	std::vector<int> papi_events() const override
 	{
-		std::vector<std::reference_wrapper<const std::string>> v;
+		std::vector<int> v;
+		std::tuple<_PAPIWrappersT...> papi_wrappers;
 
-		for (const auto& papi_wrapper : m_papi_wrappers)
-			v.push_back(papi_wrapper->name());
+		boost::fusion::for_each(papi_wrappers, [&v](auto& papi)
+		{
+			for (int event : papi.get_event_types())
+				v.push_back(event);
+		});
 
 		return v;
 	}
-	*/
 
 	suite& on_test_complete(test_complete_t f)
 	{

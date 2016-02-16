@@ -29,6 +29,8 @@ struct papi_wrapper : public papi_wrapper_base
 	static constexpr int events_count = sizeof...(_EventsT);
 	typedef std::array<long long, events_count> counters_type;
 
+	static const std::array<int, events_count>& get_event_types() { return s_events; }
+
 	void start() override
 	{
 		int ret;

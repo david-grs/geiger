@@ -1,10 +1,12 @@
 #include "printers.h"
 #include "benchmark.h"
+#include "papi.h"
 
 #include <string>
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+#include <locale>
 
 namespace benchmark
 {
@@ -22,14 +24,27 @@ void console::on_start(const suite_base& s)
 
 	m_first_col_width = it->get().size();
 
-	int width = fprintf(stdout, "%-*s %10s %10s", m_first_col_width, "Test", "Time (ns)", "Iterations\n");
-	std::cout << std::string(width - 1, '-') << std::endl;
+	int width = fprintf(stdout, "%-*s %10s", m_first_col_width, "Test", "Time (ns)");
+
+	std::vector<int> papi_events = s.papi_events();
+	for (int event : papi_events)
+	{
+		std::string event_name = get_papi_event_name(event);
+		width += fprintf(stdout, " %12s", event_name.c_str());
+	}
+
+	std::cout << "\n" << std::string(width, '-') << std::endl;
 }
 
 void console::on_test_complete(const std::string& name,
 							   const test_report& r)
 {
-	fprintf(stdout, "%-*s %10ld %10ld\n", m_first_col_width, name.c_str(), r.time_per_task().count(), r.iteration_count());
+	fprintf(stdout, "%-*s %10ld", m_first_col_width, name.c_str(), r.time_per_task().count());
+
+	for (long long counter : r.papi_counters())
+		fprintf(stdout, " %12lld", counter);
+	
+	std::cout << std::endl;
 }
 
 }

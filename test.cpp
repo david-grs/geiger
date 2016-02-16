@@ -13,10 +13,20 @@ extern "C"
 #include <iostream>
 #include <algorithm>
 
+static void escape(void* p)
+{
+	asm volatile("" : : "g"(p) : "memory");
+}
+
+static void clobber()
+{
+	asm volatile("" : : : "memory");
+}
+
 void foo()
 {
 	using namespace benchmark;
-	suite<instr_profiler> s;
+	suite<instr_profiler, cache_profiler> s;
 
 	s.add("rand", []()
 	{
@@ -51,6 +61,11 @@ void foo()
 	{
 		std::vector<int> v;
 		v.reserve(1e3);
+	})
+	.add("vector push_back", []()
+	{
+		std::vector<int> v;
+		v.push_back(1000);
 	})
 	.set_printer<benchmark::printers::console>()
 	/*

@@ -64,6 +64,12 @@ struct chrono
 		return std::chrono::nanoseconds(std::llround(cycles / detail::tsc_freq_ghz));
 	}
 
+	template <typename _DurationT>
+	static int64_t to_cycles(_DurationT duration)
+	{
+		return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() * detail::tsc_freq_ghz;
+	}
+
 private:
 	uint64_t m_start;
 };
