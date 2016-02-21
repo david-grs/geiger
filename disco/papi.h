@@ -38,7 +38,19 @@ struct papi_wrapper : public papi_wrapper_base
     {
         int ret;
         if ((ret = ::PAPI_start_counters(const_cast<int*>(s_events.data()), events_count)) != PAPI_OK)
-            throw std::runtime_error(PAPI_strerror(ret));
+        {
+            std::string error("PAPI_start_counters failed with events: ");
+
+            for (const std::string& name : s_event_names)
+            {
+                error += name;
+                error += " ";
+            }
+
+            error += ": ";
+            error += PAPI_strerror(ret);
+            throw std::runtime_error(error);
+        }
     }
 
     void stop() override
