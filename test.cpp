@@ -24,7 +24,7 @@ static void clobber()
 
 void foo()
 {
-    using namespace benchmark;
+    using namespace disco;
     suite<instr_profiler, cache_profiler> s;
 
     s.add("rand",
@@ -40,7 +40,7 @@ void foo()
         .add("rdtsc",
              []()
              {
-                 benchmark::detail::rdtsc();
+                 disco::detail::rdtsc();
              })
         .add("gettimeofday()",
              []()
@@ -82,15 +82,15 @@ void foo()
                           })
         .on_complete([](const suite_report& r)
                      {
-                         for (const auto& p : r.tests)
-                             std::cout << p.first << ":" << p.second.time_per_task().count() << "ns" << std::endl;
+                     //    for (const auto& p : r.tests)
+                     //        std::cout << p.first << ":" << p.second.time_per_task().count() << "ns" << std::endl;
                      })
         .run();
 }
 
 int main()
 {
-    benchmark::init();
+    disco::init();
     foo();
     return 0;
 }

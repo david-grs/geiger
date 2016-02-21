@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <locale>
 
-namespace benchmark
+namespace disco
 {
 
 namespace printers

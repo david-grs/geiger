@@ -5,7 +5,7 @@
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 
-namespace benchmark
+namespace disco
 {
 
 template <typename... _PAPIWrappersT>

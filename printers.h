@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace benchmark
+namespace disco
 {
 
 struct suite_base;

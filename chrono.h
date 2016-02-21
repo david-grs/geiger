@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace benchmark
+namespace disco
 {
 
 void init();

@@ -7,7 +7,7 @@ extern "C" {
 #include <time.h>
 }
 
-namespace benchmark
+namespace disco
 {
 
 namespace detail

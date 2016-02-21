@@ -12,7 +12,7 @@
 #include <tuple>
 #include <chrono>
 
-namespace benchmark
+namespace disco
 {
 
 struct test_report
