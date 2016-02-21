@@ -1,7 +1,4 @@
-#include "papi.h"
-#include "chrono.h"
-#include "benchmark.h"
-#include "printers.h"
+#include "disco/benchmark.h"
 
 extern "C" {
 #include <unistd.h>
