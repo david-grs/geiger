@@ -7,7 +7,7 @@ Examples
 --------
 
 ### Time measurement
-The following code...
+The simplest usage of disco is do measure the time required for a task:
 
 ```c++
   #include "disco/benchmark.h"
@@ -43,7 +43,7 @@ The following code...
   }
 ```
 
-... will output:
+This code will output:
 
 ```
   Test              Time (ns)
@@ -55,6 +55,9 @@ The following code...
 ---
 
 ### Hardware counters
+A more advanced feature is to include hardware counters. This is done by specifying a list of *papi_wrapper<...>* in the
+template parameters list of *disco::suite*.
+
 ```c++
   #include "disco/benchmark.h"
   
@@ -94,7 +97,7 @@ The following code...
   }
 ```
 
-... will output:
+This code will output:
 
 ```
 Test              Time (ns) PAPI_TOT_INS PAPI_TOT_CYC  PAPI_BR_MSP
