@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-add_definitions(-O3 -ggdb -stdlib=libstdc++ -std=c++1z)
+add_definitions(-O3 -g -stdlib=libstdc++ -std=c++14)
 include_directories(.)
 
 add_subdirectory(disco)
