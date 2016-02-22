@@ -2,36 +2,51 @@ disco
 =====
 A micro benchmark library in C++ that supports hardware performance counters.
 
+
 Example
 -------
 ```c++
-    using namespace disco;
-    suite<instr_profiler, cache_profiler> s;
-
-    s.add("rand",
-          []()
-          {
-              rand();
-          })
-      .add("vector push_back",
-           []()
-           {
-               std::vector<int> v;
-               v.push_back(1000);
-           })
-      .set_printer<printers::console>()
-      .run();
+  #include "disco/benchmark.h"
+  
+  #include <vector>
+  #include <cstdlib>
+  
+  int main()
+  {
+      disco::init();
+  
+      // A benchmark suite that does only time measurement
+      disco::suite<> s;
+  
+      s.add("rand", []()
+            {
+                rand();
+            });
+  
+      s.add("vector push_back", []()
+            {
+                std::vector<int> v;
+                v.push_back(1000);
+            });
+  
+      // Redirection of each test result to the "console" printer
+      s.set_printer<disco::printers::console>();
+  
+      // Run all benchmarks
+      s.run();
+  
+      return 0;
+  }
 ```
-
 
 
 Output
 ------
 ```
-Test              Time (ns) PAPI_TOT_INS PAPI_TOT_CYC  PAPI_BR_MSP  PAPI_L1_DCM  PAPI_L2_DCM  PAPI_L3_TCM
----------------------------------------------------------------------------------------------------------
-rand                     14   3693733988   1887588226      2347800        25833         8521           22
-vector reserve()         65   4985638505   1889663240         9295        33196         7642           44
-vector push_back         45   4682052955   1890649046         8526        28448         6182           15
+  Test              Time (ns)
+  ---------------------------
+  rand                     14
+  vector push_back         47
 ```
+
 
