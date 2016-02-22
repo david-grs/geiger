@@ -3,8 +3,12 @@ disco
 A micro benchmark library in C++ that supports hardware performance counters.
 
 
-Example
--------
+Examples
+--------
+
+### Time measurement
+The following code...
+
 ```c++
   #include "disco/benchmark.h"
   
@@ -39,9 +43,8 @@ Example
   }
 ```
 
+... will output:
 
-Output
-------
 ```
   Test              Time (ns)
   ---------------------------
@@ -49,4 +52,5 @@ Output
   vector push_back         47
 ```
 
+---
 
