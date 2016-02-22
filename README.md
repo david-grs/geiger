@@ -7,7 +7,7 @@ Examples
 --------
 
 ### Time measurement
-The simplest usage of disco is do measure the time required for a task:
+The simplest usage of disco is to measure the time required for a task:
 
 ```c++
   #include "disco/benchmark.h"
