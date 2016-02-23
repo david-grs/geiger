@@ -1,9 +1,9 @@
-add_executable(simple simple.cpp)
-target_link_libraries(simple disco)
+function(add_example name)
+  add_executable(${name} ${name}.cpp)
+  target_link_libraries(${name} disco)
+endfunction(add_example)
 
-add_executable(hardware_counters hardware_counters.cpp)
-target_link_libraries(hardware_counters disco)
-
-add_executable(walk walk.cpp)
-target_link_libraries(walk disco)
-
+add_example(simple)
+add_example(hardware_counters)
+add_example(walk)
+add_example(full)
