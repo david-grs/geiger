@@ -47,7 +47,7 @@ void walk()
     s.add("linear walk", linear_walk())
      .add("random walk", random_walk())
      .set_printer<printers::console>()
-     .run();
+     .run(size);
 }
 
 int main()
