@@ -1,0 +1,5 @@
+- console_printer: more info when measuring related hwd counters, e.g. instruction per cycle
+- multiplexing on hwd counters
+- more examples / doc
+- passing function, with fixed arguments, e.g. s.add("f(5,6)", &f, 5, 6)
+- passing function with generated arguments
