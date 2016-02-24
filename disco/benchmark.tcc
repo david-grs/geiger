@@ -1,6 +1,8 @@
+#include "benchmark.h"
+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/rolling_mean.hpp>
 
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
@@ -35,7 +37,20 @@ std::vector<int> suite<_PAPIWrappersT...>::papi_events() const
 }
 
 template <typename... _PAPIWrappersT>
-suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run()
+suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run(std::chrono::milliseconds duration)
+{
+    return run_impl(duration);
+}
+
+template <typename... _PAPIWrappersT>
+suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run(long iterations)
+{
+    return run_impl(iterations);
+}
+
+template <typename... _PAPIWrappersT>
+template <typename _DurationT>
+suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run_impl(_DurationT duration)
 {
     suite_report r;
 
@@ -44,7 +59,7 @@ suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run()
 
     for (const auto& p : m_tests)
     {
-        test_report test_report = p->run();
+        test_report test_report = p->run(duration);
         r.tests.emplace_back(p->name(), test_report);
 
         if (m_on_test_complete)
@@ -61,12 +76,10 @@ suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run()
 }
 
 template <typename _CallableT, typename... _PAPIWrappersT>
-test_report test<_CallableT, _PAPIWrappersT...>::run() const
+test_report test<_CallableT, _PAPIWrappersT...>::run(std::chrono::milliseconds duration) const
 {
-    std::tuple<_PAPIWrappersT...> papi_wrappers;
-
     using namespace boost::accumulators;
-    accumulator_set<int64_t, stats<tag::mean>> acc;
+    accumulator_set<int64_t, stats<tag::rolling_mean>> acc(tag::rolling_window::window_size = 1e3);
 
     chrono sampling_chrono;
     sampling_chrono.start();
@@ -83,7 +96,18 @@ test_report test<_CallableT, _PAPIWrappersT...>::run() const
         acc(c.elapsed());
     }
 
-    long iterations = std::chrono::milliseconds(1) / chrono::from_cycles(mean(acc));
+    long iterations = duration / chrono::from_cycles(rolling_mean(acc));
+    return run(iterations, std::chrono::nanoseconds(duration));
+}
+
+template <typename _CallableT, typename... _PAPIWrappersT>
+test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
+                                                     boost::optional<std::chrono::nanoseconds> duration) const
+{
+    static constexpr long BatchSize = 1e3;
+    iterations /= BatchSize;
+
+    chrono c;
 
     auto run_benchmark = [&]() -> auto
     {
@@ -95,19 +119,26 @@ test_report test<_CallableT, _PAPIWrappersT...>::run() const
         return c.elapsed();
     };
 
-    auto next_iterations_count = [&](int64_t cycles)
+    auto next_iterations_count = [&](int64_t cycles_last_batch)
     {
-        iterations = std::lround(iterations / ((double)cycles / chrono::to_cycles(std::chrono::milliseconds(1))));
+        if (duration)
+        {
+            int64_t expected_cycles = chrono::to_cycles(duration.get() / BatchSize);
+            double calibration = cycles_last_batch / (double)expected_cycles;
+
+            iterations = std::lround(iterations / calibration);
+        }
     };
 
-    constexpr long papi_wrapppers_count = static_cast<long>(std::tuple_size<decltype(papi_wrappers)>::value);
+    std::tuple<_PAPIWrappersT...> papi_wrappers;
+    constexpr long papi_wrapppers_count = sizeof...(_PAPIWrappersT);
 
     int64_t total_cycles = 0;
     long total_iterations = 0;
 
     if (papi_wrapppers_count == 0)
     {
-        for (int i = 0; i < 1e3; ++i)
+        for (int i = 0; i < BatchSize; ++i)
         {
             int64_t cycles = run_benchmark();
 
@@ -126,7 +157,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run() const
                                 counters.resize(counters.size() + papi.get_counters().size());
                                 int j = counters.size() - papi.get_counters().size();
 
-                                for (int i = 0; i < 1e3; ++i)
+                                for (int i = 0; i < BatchSize; ++i)
                                 {
                                     papi.start();
                                     int64_t cycles = run_benchmark();

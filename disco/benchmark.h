@@ -4,6 +4,8 @@
 #include "chrono.h"
 #include "printers.h"
 
+#include <boost/optional.hpp>
+
 #include <functional>
 #include <string>
 #include <vector>
@@ -60,7 +62,8 @@ struct test_base
     {
     }
 
-    virtual test_report run() const = 0;
+    virtual test_report run(std::chrono::milliseconds duration) const = 0;
+    virtual test_report run(long iterations, boost::optional<std::chrono::nanoseconds> duration = boost::none) const = 0;
 
     const std::string& name() const
     {
@@ -78,7 +81,8 @@ struct test : public test_base
     {
     }
 
-    test_report run() const override;
+    test_report run(std::chrono::milliseconds duration) const override;
+    test_report run(long iterations, boost::optional<std::chrono::nanoseconds> duration = boost::none) const override;
 
    private:
     _CallableT m_callable;
@@ -95,7 +99,9 @@ struct suite_base
     {
     }
 
-    virtual suite_base& run() = 0;
+    virtual suite_base& run(std::chrono::milliseconds duration) = 0;
+    virtual suite_base& run(long iterations) =0;
+
     virtual std::vector<std::reference_wrapper<const std::string>> test_names() const = 0;
     virtual std::vector<int> papi_events() const = 0;
 };
@@ -103,7 +109,9 @@ struct suite_base
 template <typename... _PAPIWrappersT>
 struct suite : public suite_base
 {
-    suite& run() override;
+    suite& run(std::chrono::milliseconds duration = std::chrono::seconds(1)) override;
+    suite& run(long iterations) override;
+
     std::vector<std::reference_wrapper<const std::string>> test_names() const override;
     std::vector<int> papi_events() const override;
 
@@ -137,6 +145,9 @@ struct suite : public suite_base
     }
 
    private:
+    template <typename _DurationT>
+    suite& run_impl(_DurationT duration);
+
     std::vector<std::unique_ptr<test_base>> m_tests;
     std::unique_ptr<printer_base> m_printer;
 
