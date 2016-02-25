@@ -77,8 +77,8 @@ When specifying a duration, before running the benchmark, disco is performing a 
 ---
 
 ### Hardware counters
-A more advanced usage of disco is to include hardware counters. This is done by specifying a list of *papi_wrapper<...>* in the
-template parameters list of *disco::suite*:
+A more advanced usage of disco is to include hardware counters. This is done by specifying a list of *papi_wrapper<_EventT...>* in the
+template parameters list of *disco::suite<>*:
 
 ```c++
       // instr_profiler reports the number of instructions, cycles and mispredicted branches
@@ -86,7 +86,7 @@ template parameters list of *disco::suite*:
       
       // As before, adding some tests...
 
-      // Run all benchmarks with hardware counters measurement.
+      // Run all tests and measure hardware counters
       s.run();
 ```
 
@@ -101,34 +101,13 @@ vector push_back         46   4642911637   1889165095         9845
   
 You can cover the events you want by defining your own PAPI wrapper. For example, if you are interested by events
 around branch predictions:
-      // branc branches taken, not taken, mispredicted, correctly predicted)
-      // using branch_profiler = papi_wrapper<PAPI_BR_TKN, PAPI_BR_NTK, PAPI_BR_MSP, PAPI_BR_PRC>
-      // 
-      // and then use it:
-      // suite<branch_profiler> s;
 
-      s.add("rand",
-            []()
-            {
-                rand();
-            })
-       .add("vector push_back",
-            []()
-            {
-                std::vector<int> v;
-                v.push_back(1000);
-            })
-       .set_printer<printers::console>()
-       .run();
-  
-       return 0;
-  }
+```c++
+      // Measuring branches taken, not taken, mispredicted and correctly predicted
+      using branch_profiler = papi_wrapper<PAPI_BR_TKN, PAPI_BR_NTK, PAPI_BR_MSP, PAPI_BR_PRC>
+
+      suite<branch_profiler> s;
 ```
-
-This code will output:
-
-
-
 
 Documentation
 -------------
