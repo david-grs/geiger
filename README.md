@@ -52,10 +52,10 @@ This code will output:
   vector push_back         47
 ```
 
-By default - as in the example above - each test is running during one second. The *rand* test has then been executed
-tens of thousands of times, and the average execution time is 14ns. 
+By default - as in the example above - each test is running during one second. Here, the "rand" test has then been executed
+tens of thousands of times, and the average execution time was 14ns. 
 
-You can specify the duration you want as argument to *disco::suite::run*...
+You can specify the duration you want as argument to *disco::suite::run()*...
 
 ```c++
       // Run each test during one millisecond
@@ -71,7 +71,7 @@ You can specify the duration you want as argument to *disco::suite::run*...
 
 Simply be aware that a too short time - or a too low number of iterations - will result in less accurate measurements.
 
-When specifying a duration, before running the benchmark, disco is performing a calibration stage where is approximates the number of iterations required to run this task during the specified time.
+When specifying a duration, before running the benchmark, disco it performing a calibration stage where is approximates the number of iterations required to run this task during the specified time.
 
 
 ---
