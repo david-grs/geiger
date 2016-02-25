@@ -109,6 +109,8 @@ around branch predictions:
       suite<branch_profiler> s;
 ```
 
-Documentation
--------------
+
+---
+
+### Events
 
