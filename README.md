@@ -71,7 +71,7 @@ You can specify the duration you want as argument to *disco::suite::run()*...
 
 Simply be aware that a too short time - or a too low number of iterations - will result in less accurate measurements.
 
-When specifying a duration, before running the benchmark, disco it performing a calibration stage where is approximates the number of iterations required to run this task during the specified time.
+When specifying a duration, before running the benchmark, disco is performing a calibration stage where it approximates the number of iterations required to run this task during the specified time.
 
 
 ---
