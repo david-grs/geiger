@@ -113,4 +113,4 @@ around branch predictions:
 ---
 
 ### Events
-
+### Implementation details
