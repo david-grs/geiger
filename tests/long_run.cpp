@@ -20,7 +20,7 @@ int main()
 
     s.add("sleep(3)", []()
           {
-              sleep(3)
+              sleep(3);
           });
 
     // Redirection of each test result to the "console" printer
