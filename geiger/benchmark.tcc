@@ -3,6 +3,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
+#include <boost/accumulators/statistics/count.hpp>
 
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
@@ -79,21 +80,29 @@ template <typename _CallableT, typename... _PAPIWrappersT>
 test_report test<_CallableT, _PAPIWrappersT...>::run(std::chrono::milliseconds duration) const
 {
     using namespace boost::accumulators;
-    accumulator_set<int64_t, stats<tag::rolling_mean>> acc(tag::rolling_window::window_size = 1e3);
+    accumulator_set<int64_t, stats<tag::rolling_mean, tag::count>> acc(tag::rolling_window::window_size = 1e3);
 
     chrono sampling_chrono;
     sampling_chrono.start();
-    int64_t elapsed = 0;
 
-    constexpr std::chrono::milliseconds max_sampling_time(100);
+    std::chrono::milliseconds max_sampling_time
+     = std::min(duration, std::chrono::milliseconds(100));
 
     chrono c;
+    int64_t elapsed = 0;
 
     for (int i = 0; i < 1e6 && sampling_chrono.elapsed_time() < max_sampling_time; ++i)
     {
         c.start();
         m_callable();
-        acc(c.elapsed());
+
+        elapsed = c.elapsed();
+        acc(elapsed);
+    }
+
+    if (count(acc) == 1)
+    {
+        return {1, elapsed, {}};
     }
 
     long iterations = duration / chrono::from_cycles(rolling_mean(acc));
@@ -104,9 +113,14 @@ template <typename _CallableT, typename... _PAPIWrappersT>
 test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
                                                      boost::optional<std::chrono::nanoseconds> duration) const
 {
-    static constexpr long BatchSize = 1e3;
-    iterations /= BatchSize;
+    long batches;
 
+    if (duration)
+        batches = 1e3; // TODO
+    else
+        batches = 1;
+
+    iterations /= batches;
     chrono c;
 
     auto run_benchmark = [&]() -> auto
@@ -123,7 +137,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
     {
         if (duration)
         {
-            int64_t expected_cycles = chrono::to_cycles(duration.get() / BatchSize);
+            int64_t expected_cycles = chrono::to_cycles(duration.get() / batches);
             double calibration = cycles_last_batch / (double)expected_cycles;
 
             iterations = std::lround(iterations / calibration);
@@ -138,7 +152,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
     if (papi_wrapppers_count == 0)
     {
-        for (int i = 0; i < BatchSize; ++i)
+        for (int i = 0; i < batches; ++i)
         {
             int64_t cycles = run_benchmark();
 
@@ -157,7 +171,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
                                 counters.resize(counters.size() + papi.get_counters().size());
                                 int j = counters.size() - papi.get_counters().size();
 
-                                for (int i = 0; i < BatchSize; ++i)
+                                for (int i = 0; i < batches; ++i)
                                 {
                                     papi.start();
                                     int64_t cycles = run_benchmark();
@@ -176,4 +190,5 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
     return {total_iterations, total_cycles, std::move(counters)};
 }
+
 }
