@@ -5,4 +5,5 @@ include_directories(.)
 
 add_subdirectory(geiger)
 add_subdirectory(examples)
+add_subdirectory(tests)
 
