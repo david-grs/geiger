@@ -1,10 +1,5 @@
 #include "benchmark.h"
 
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/rolling_mean.hpp>
-#include <boost/accumulators/statistics/count.hpp>
-
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 
@@ -79,33 +74,15 @@ suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run_impl(_DurationT duration
 template <typename _CallableT, typename... _PAPIWrappersT>
 test_report test<_CallableT, _PAPIWrappersT...>::run(std::chrono::milliseconds duration) const
 {
-    using namespace boost::accumulators;
-    accumulator_set<int64_t, stats<tag::rolling_mean, tag::count>> acc(tag::rolling_window::window_size = 1e3);
+    test_report r = run(1);
 
-    chrono sampling_chrono;
-    sampling_chrono.start();
+    assert(r.iteration_count() == 1);
 
-    std::chrono::milliseconds max_sampling_time
-     = std::min(duration, std::chrono::milliseconds(100));
+    auto time_elapsed = r.time_per_task();
+    if (time_elapsed > duration)
+        return r;
 
-    chrono c;
-    int64_t elapsed = 0;
-
-    for (int i = 0; i < 1e6 && sampling_chrono.elapsed_time() < max_sampling_time; ++i)
-    {
-        c.start();
-        m_callable();
-
-        elapsed = c.elapsed();
-        acc(elapsed);
-    }
-
-    if (count(acc) == 1)
-    {
-        return {1, elapsed, {}};
-    }
-
-    long iterations = duration / chrono::from_cycles(rolling_mean(acc));
+    long iterations = duration / time_elapsed;
     return run(iterations, std::chrono::nanoseconds(duration));
 }
 
@@ -115,7 +92,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 {
     long batches;
 
-    if (duration)
+    if (duration && iterations > 1e6)
         batches = 1e3; // TODO
     else
         batches = 1;

@@ -28,6 +28,7 @@ struct test_report
     {
         return m_iterations;
     }
+
     int64_t total_cycles() const
     {
         return m_cycles;
@@ -37,6 +38,7 @@ struct test_report
     {
         return m_cycles / (double)m_iterations;
     }
+
     std::chrono::nanoseconds time_per_task() const
     {
         return chrono::from_cycles(cycles_per_task());
