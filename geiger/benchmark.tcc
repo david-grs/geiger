@@ -92,10 +92,20 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 {
     long batches;
 
-    if (duration && iterations > 1e6)
-        batches = 1e3; // TODO
-    else
+    if (!duration)
+    {
         batches = 1;
+    }
+    else
+    {
+        // TODO
+        if (iterations > 1e6)
+            batches = 1e3;
+        else if (iterations > 1e4)
+            batches = 100;
+        else if (iterations > 1e3)
+            batches = 10;
+    }
 
     iterations /= batches;
     chrono c;
