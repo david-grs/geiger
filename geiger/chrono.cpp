@@ -7,7 +7,7 @@ extern "C" {
 #include <time.h>
 }
 
-namespace disco
+namespace geiger
 {
 
 namespace detail

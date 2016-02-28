@@ -1,14 +1,14 @@
-#include "disco/benchmark.h"
+#include "geiger/benchmark.h"
 
 #include <vector>
 #include <cstdlib>
 
 int main()
 {
-    disco::init();
+    geiger::init();
 
     // A benchmark suite that does only time measurement
-    disco::suite<> s;
+    geiger::suite<> s;
 
     s.add("rand", []()
           {
@@ -22,7 +22,7 @@ int main()
           });
 
     // Redirection of each test result to the "console" printer
-    s.set_printer<disco::printers::console>();
+    s.set_printer<geiger::printers::console>();
 
     // Run all benchmarks
     s.run();

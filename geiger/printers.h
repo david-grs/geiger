@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace disco
+namespace geiger
 {
 
 struct suite_base;

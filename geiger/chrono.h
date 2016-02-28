@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace disco
+namespace geiger
 {
 
 void init();

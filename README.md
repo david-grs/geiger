@@ -1,4 +1,4 @@
-disco
+geiger
 =====
 A micro benchmark library in C++ that supports hardware performance counters.
 
@@ -7,20 +7,20 @@ Examples
 --------
 
 ### Time measurement
-The simplest usage of disco is to measure the time required for a task:
+The simplest usage of geiger is to measure the time required for a task:
 
 ```c++
-  #include "disco/benchmark.h"
+  #include "geiger/benchmark.h"
   
   #include <vector>
   #include <cstdlib>
   
   int main()
   {
-      disco::init();
+      geiger::init();
   
       // A benchmark suite that does only time measurement
-      disco::suite<> s;
+      geiger::suite<> s;
   
       s.add("rand", []()
             {
@@ -34,7 +34,7 @@ The simplest usage of disco is to measure the time required for a task:
             });
   
       // Redirection of each test result to the "console" printer
-      s.set_printer<disco::printers::console>();
+      s.set_printer<geiger::printers::console>();
   
       // Run each test during one second
       s.run();
@@ -55,7 +55,7 @@ This code will output:
 By default - as in the example above - each test is running during one second. Here, the "rand" test has then been executed
 tens of thousands of times, and the average execution time was 14ns. 
 
-You can specify the duration you want as argument to *disco::suite::run()*...
+You can specify the duration you want as argument to *geiger::suite::run()*...
 
 ```c++
       // Run each test during one millisecond
@@ -71,14 +71,14 @@ You can specify the duration you want as argument to *disco::suite::run()*...
 
 Simply be aware that a too short time - or a too low number of iterations - will result in less accurate measurements.
 
-When specifying a duration, before running the benchmark, disco is performing a calibration stage where it approximates the number of iterations required to run this task during the specified time.
+When specifying a duration, before running the benchmark, geiger is performing a calibration stage where it approximates the number of iterations required to run this task during the specified time.
 
 
 ---
 
 ### Hardware counters
-A more advanced usage of disco is to include hardware counters. This is done by specifying a list of *papi_wrapper<_EventT...>* in the
-template parameters list of *disco::suite<>*:
+A more advanced usage of geiger is to include hardware counters. This is done by specifying a list of *papi_wrapper<_EventT...>* in the
+template parameters list of *geiger::suite<>*:
 
 ```c++
       // instr_profiler reports the number of instructions, cycles and mispredicted branches

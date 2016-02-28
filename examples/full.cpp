@@ -1,4 +1,4 @@
-#include "disco/benchmark.h"
+#include "geiger/benchmark.h"
 
 extern "C" {
 #include <unistd.h>
@@ -21,7 +21,7 @@ static void clobber()
 
 void foo()
 {
-    using namespace disco;
+    using namespace geiger;
     suite<instr_profiler, cache_profiler> s;
 
     s.add("rand",
@@ -37,7 +37,7 @@ void foo()
         .add("rdtsc",
              []()
              {
-                 disco::detail::rdtsc();
+                 geiger::detail::rdtsc();
              })
         .add("gettimeofday()",
              []()
@@ -87,7 +87,7 @@ void foo()
 
 int main()
 {
-    disco::init();
+    geiger::init();
     foo();
     return 0;
 }

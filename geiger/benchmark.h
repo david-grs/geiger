@@ -14,7 +14,7 @@
 #include <tuple>
 #include <chrono>
 
-namespace disco
+namespace geiger
 {
 
 struct test_report

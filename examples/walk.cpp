@@ -1,4 +1,4 @@
-#include "disco/benchmark.h"
+#include "geiger/benchmark.h"
 
 extern "C" {
 #include <unistd.h>
@@ -41,7 +41,7 @@ auto random_walk()
 
 void walk()
 {
-    using namespace disco;
+    using namespace geiger;
     suite<cache_profiler> s;
 
     s.add("linear walk", linear_walk())
@@ -52,7 +52,7 @@ void walk()
 
 int main()
 {
-    disco::init();
+    geiger::init();
     walk();
     return 0;
 }

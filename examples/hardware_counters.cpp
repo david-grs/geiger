@@ -1,11 +1,11 @@
-#include "disco/benchmark.h"
+#include "geiger/benchmark.h"
 
 #include<vector>
 #include <cstdlib>
 
 int main()
 {
-    using namespace disco;
+    using namespace geiger;
     init();
 
     // instr_profiler reports the number of instructions, cycles and mispredicted branches

@@ -1,6 +1,6 @@
 function(add_example name)
   add_executable(${name} ${name}.cpp)
-  target_link_libraries(${name} disco)
+  target_link_libraries(${name} geiger)
 endfunction(add_example)
 
 add_example(simple)

@@ -6,7 +6,7 @@
 #include <array>
 #include <string>
 
-namespace disco
+namespace geiger
 {
 
 static std::string get_papi_event_name(int event_code)

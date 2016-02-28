@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <locale>
 
-namespace disco
+namespace geiger
 {
 
 namespace printers
