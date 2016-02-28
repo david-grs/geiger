@@ -25,7 +25,7 @@ void console::on_start(const suite_base& s)
 
     m_first_col_width = it->get().size();
 
-    int width = fprintf(stdout, "%-*s %10s", m_first_col_width, "Test", "Time (ns)");
+    int width = fprintf(stdout, "%-*s %12s", m_first_col_width, "Test", "Time (ns)");
 
     std::vector<int> papi_events = s.papi_events();
     for (int event : papi_events)
@@ -39,7 +39,7 @@ void console::on_start(const suite_base& s)
 
 void console::on_test_complete(const std::string& name, const test_report& r)
 {
-    fprintf(stdout, "%-*s %10ld", m_first_col_width, name.c_str(), r.time_per_task().count());
+    fprintf(stdout, "%-*s %12ld", m_first_col_width, name.c_str(), r.time_per_task().count());
 
     for (long long counter : r.papi_counters())
         fprintf(stdout, " %12lld", counter);
