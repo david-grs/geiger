@@ -17,6 +17,7 @@ The simplest usage of geiger is to measure the time required for a task:
   
   int main()
   {
+      // This is mandatory before running any benchmarks
       geiger::init();
   
       // A benchmark suite that does only time measurement
@@ -69,7 +70,7 @@ You can specify the duration you want as argument to *geiger::suite::run()*...
       s.run(100);
 ```
 
-Simply be aware that a too short time - or a too low number of iterations - will result in less accurate measurements.
+Simply be aware that a too short time - or a too low number of iterations - can result in less accurate measurements.
 
 When specifying a duration, before running the benchmark, geiger is performing a calibration stage where it approximates the number of iterations required to run this task during the specified time.
 
