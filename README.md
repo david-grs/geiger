@@ -3,6 +3,14 @@ geiger
 A micro benchmark library in C++ that supports hardware performance counters.
 
 
+Build & install
+---------------
+$ mkdir build && cd build
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+$ make
+# make install
+
+
 Examples
 --------
 
