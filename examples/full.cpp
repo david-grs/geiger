@@ -9,6 +9,7 @@ extern "C" {
 #include <iostream>
 #include <algorithm>
 
+/*
 static void escape(void* p)
 {
     asm volatile("" : : "g"(p) : "memory");
@@ -18,6 +19,7 @@ static void clobber()
 {
     asm volatile("" : : : "memory");
 }
+*/
 
 void foo()
 {
