@@ -105,6 +105,8 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
             batches = 100;
         else if (iterations > 1e3)
             batches = 10;
+        else
+            batches = 1;
     }
 
     iterations /= batches;
