@@ -1,4 +1,5 @@
 #include "geiger/benchmark.h"
+#include "geiger/printer_console.h"
 
 extern "C" {
 #include <unistd.h>
@@ -74,7 +75,7 @@ void foo()
                  std::vector<int> v;
                  v.push_back(1000);
              })
-        .set_printer<printers::console>()
+        .set_printer<printer::console>()
         .on_test_complete([](const std::string& name, const test_report& r)
                           {
 

@@ -1,4 +1,5 @@
 #include "geiger/benchmark.h"
+#include "geiger/printer_console.h"
 
 #include <vector>
 #include <cstdlib>
@@ -22,7 +23,7 @@ int main()
           });
 
     // Redirection of each test result to the "console" printer
-    s.set_printer<geiger::printers::console>();
+    s.set_printer<geiger::printer::console>();
 
     // Run all benchmarks
     s.run();

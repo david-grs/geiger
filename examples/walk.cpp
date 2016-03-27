@@ -1,4 +1,5 @@
 #include "geiger/benchmark.h"
+#include "geiger/printer_console.h"
 
 extern "C" {
 #include <unistd.h>
@@ -46,7 +47,7 @@ void walk()
 
     s.add("linear walk", linear_walk())
      .add("random walk", random_walk())
-     .set_printer<printers::console>()
+     .set_printer<printer::console>()
      .run(size);
 }
 

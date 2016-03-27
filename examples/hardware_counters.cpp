@@ -1,6 +1,7 @@
 #include "geiger/benchmark.h"
+#include "geiger/printer_console.h"
 
-#include<vector>
+#include <vector>
 #include <cstdlib>
 
 int main()
@@ -29,7 +30,7 @@ int main()
               std::vector<int> v;
               v.push_back(1000);
           })
-     .set_printer<printers::console>()
+     .set_printer<printer::console>()
      .run();
 
      return 0;

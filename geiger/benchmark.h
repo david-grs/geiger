@@ -2,7 +2,7 @@
 
 #include "papi.h"
 #include "chrono.h"
-#include "printers.h"
+#include "printer.h"
 
 #include <boost/optional.hpp>
 
