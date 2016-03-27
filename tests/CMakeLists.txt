@@ -1,6 +1,6 @@
-function(add_exec_test name)
-  add_executable(${name} ${name}.cpp)
-  target_link_libraries(${name} geiger)
-endfunction(add_exec_test)
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
-add_exec_test(long_run)
+add_executable(unit_tests timed_run.cpp)
+target_link_libraries(unit_tests ${GTEST_BOTH_LIBRARIES} geiger pthread)
+add_test(unit_tests unit_tests)
