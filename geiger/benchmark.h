@@ -1,9 +1,5 @@
 #pragma once
 
-#include "papi.h"
-#include "chrono.h"
-#include "printer.h"
-
 #include <boost/optional.hpp>
 
 #include <functional>
@@ -41,7 +37,7 @@ struct test_report
 
     std::chrono::nanoseconds time_per_task() const
     {
-        return chrono::from_cycles(cycles_per_task());
+        return geiger::chrono::from_cycles(cycles_per_task());
     }
 
     const std::vector<long long>& papi_counters() const
@@ -158,4 +154,3 @@ struct suite : public suite_base
 };
 }
 
-#include "benchmark.tcc"

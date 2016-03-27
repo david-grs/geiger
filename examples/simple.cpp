@@ -1,5 +1,4 @@
-#include "geiger/benchmark.h"
-#include "geiger/printer_console.h"
+#include "geiger/geiger.h"
 
 #include <vector>
 #include <cstdlib>

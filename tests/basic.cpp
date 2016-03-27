@@ -1,4 +1,4 @@
-#include "geiger/benchmark.h"
+#include "geiger/geiger.h"
 
 #include <gtest/gtest.h>
 

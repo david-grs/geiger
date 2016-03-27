@@ -1,7 +1,3 @@
-#include "printer.h"
-#include "benchmark.h"
-#include "papi.h"
-
 #include <string>
 #include <algorithm>
 #include <iostream>
