@@ -21,7 +21,8 @@ The simplest usage of geiger is to measure the time required for a task:
 
 ```c++
   #include "geiger/benchmark.h"
-  
+  #include "geiger/printer_console.h"
+
   #include <vector>
   #include <cstdlib>
   
@@ -45,7 +46,7 @@ The simplest usage of geiger is to measure the time required for a task:
             });
   
       // Redirection of each test result to the "console" printer
-      s.set_printer<geiger::printers::console>();
+      s.set_printer<geiger::printer::console>();
   
       // Run each test during one second
       s.run();
