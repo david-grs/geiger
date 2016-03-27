@@ -9,7 +9,7 @@
 namespace geiger
 {
 
-std::string get_papi_event_name(int event_code)
+inline std::string get_papi_event_name(int event_code)
 {
     char event_name[PAPI_MAX_STR_LEN];
     PAPI_event_code_to_name(event_code, event_name);
