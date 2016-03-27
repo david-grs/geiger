@@ -5,10 +5,12 @@ A micro benchmark library in C++ that supports hardware performance counters.
 
 Build & install
 ---------------
+```bash
 $ mkdir build && cd build
 $ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 $ make
 # make install
+```
 
 
 Examples
