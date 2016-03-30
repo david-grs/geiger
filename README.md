@@ -20,8 +20,7 @@ Examples
 The simplest usage of geiger is to measure the time required for a task:
 
 ```c++
-  #include "geiger/benchmark.h"
-  #include "geiger/printer_console.h"
+  #include <geiger/geiger.h>
 
   #include <vector>
   #include <cstdlib>
@@ -36,7 +35,7 @@ The simplest usage of geiger is to measure the time required for a task:
   
       s.add("rand", []()
             {
-                rand();
+                std::rand();
             });
   
       s.add("vector push_back", []()
