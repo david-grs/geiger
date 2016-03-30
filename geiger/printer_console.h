@@ -22,13 +22,13 @@ struct console : public printer_base
 
         m_first_col_width = it->get().size();
 
-        int width = ::fprintf(stdout, "%-*s %12s", m_first_col_width, "Test", "Time (ns)");
+        int width = std::fprintf(stdout, "%-*s %12s", m_first_col_width, "Test", "Time (ns)");
 
         std::vector<int> papi_events = s.papi_events();
         for (int event : papi_events)
         {
             std::string event_name = get_papi_event_name(event);
-            width += ::fprintf(stdout, " %12s", event_name.c_str());
+            width += std::fprintf(stdout, " %12s", event_name.c_str());
         }
 
         std::cout << "\n" << std::string(width, '-') << std::endl;
@@ -36,10 +36,10 @@ struct console : public printer_base
 
     void on_test_complete(const std::string& name, const test_report& r) override
     {
-        ::fprintf(stdout, "%-*s %12ld", m_first_col_width, name.c_str(), r.time_per_task().count());
+        std::fprintf(stdout, "%-*s %12ld", m_first_col_width, name.c_str(), r.time_per_task().count());
 
         for (long long counter : r.papi_counters())
-            ::fprintf(stdout, " %12lld", counter);
+            std::fprintf(stdout, " %12lld", counter);
 
         std::cout << std::endl;
     }
