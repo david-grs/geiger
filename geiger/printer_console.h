@@ -1,4 +1,5 @@
 #include "printer.h"
+#include "benchmark.h"
 
 #include <string>
 #include <algorithm>
