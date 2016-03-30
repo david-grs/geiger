@@ -21,7 +21,7 @@ int main()
     s.add("rand",
           []()
           {
-              rand();
+              std::rand();
           })
      .add("vector push_back",
           []()
