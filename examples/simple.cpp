@@ -12,7 +12,7 @@ int main()
 
     s.add("rand", []()
           {
-              rand();
+              std::rand();
           });
 
     s.add("vector push_back", []()
