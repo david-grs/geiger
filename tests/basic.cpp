@@ -38,6 +38,20 @@ TEST_F(Basic, OneTest_Lambda)
     ASSERT_EQ(1, m_on_complete_calls);
 }
 
+TEST_F(Basic, OneTest_Function)
+{
+    struct Foo
+    {
+        static void Bar() {}
+    };
+
+    m_suite.add("foo::bar", &Foo::Bar);
+    m_suite.run();
+
+    ASSERT_EQ(1, m_on_test_complete_calls);
+    ASSERT_EQ(1, m_on_complete_calls);
+}
+
 TEST_F(Basic, TwoTests_Lambda)
 {
     m_suite.add("foo", []() { });
