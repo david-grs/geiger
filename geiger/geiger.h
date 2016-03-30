@@ -5,3 +5,4 @@
 #include "printer.h"
 #include "benchmark.h"
 #include "printer_console.h"
+#include "printer_csv.h"
