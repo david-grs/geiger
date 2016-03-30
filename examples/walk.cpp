@@ -44,8 +44,8 @@ void walk()
     using namespace geiger;
     suite<cache_profiler> s;
 
-    s.add("linear walk", linear_walk())
-     .add("random walk", random_walk())
+    s.add("linear walk", &linear_walk)
+     .add("random walk", &random_walk)
      .set_printer<printer::console>()
      .run(size);
 }
