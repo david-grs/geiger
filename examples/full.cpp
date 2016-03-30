@@ -2,12 +2,13 @@
 #include "geiger/printer_console.h"
 
 extern "C" {
-#include <unistd.h>
-#include <sys/time.h>
+    #include <unistd.h>
+    #include <sys/time.h>
 }
 
 #include <cstdlib>
 #include <iostream>
+#include <ctime>
 #include <algorithm>
 
 /*
@@ -30,7 +31,7 @@ void foo()
     s.add("rand",
           []()
           {
-              rand();
+              std::rand();
           })
         .add("random",
              []()
@@ -51,17 +52,17 @@ void foo()
         .add("time",
              []()
              {
-                 time(NULL);
+                 std::time(NULL);
              })
         .add("srand",
              []()
              {
-                 srand(0);
+                 std::srand(0);
              })
         .add("srand(time)",
              []()
              {
-                 srand(time(NULL));
+                 std::srand(std::time(NULL));
              })
         .add("vector reserve()",
              []()
