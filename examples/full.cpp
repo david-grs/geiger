@@ -1,4 +1,5 @@
-#include "geiger/geiger.h"
+#include "geiger/benchmark.h"
+#include "geiger/printer_console.h"
 
 extern "C" {
 #include <unistd.h>

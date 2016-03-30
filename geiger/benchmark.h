@@ -1,5 +1,9 @@
 #pragma once
 
+#include "papi.h"
+#include "chrono.h"
+#include "printer.h"
+
 #include <boost/optional.hpp>
 
 #include <functional>
@@ -154,3 +158,4 @@ struct suite : public suite_base
 };
 }
 
+#include "benchmark.tcc"

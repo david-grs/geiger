@@ -1,5 +1,3 @@
-#include "benchmark.h"
-
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 
