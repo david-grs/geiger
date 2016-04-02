@@ -3,5 +3,4 @@
 - more examples / doc
 - passing function, with fixed arguments, e.g. s.add("f(5,6)", &f, 5, 6)
 - passing function with generated arguments
-- chrono::init is not supported on most platforms
 - (multiple) printers via ctor
