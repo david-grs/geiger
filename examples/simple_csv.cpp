@@ -22,6 +22,7 @@ int main()
     // Redirection of each test result to out.csv
     s.set_printer(geiger::printer::csv("out.csv"));
     s.run();
+    s.run();
 
     return 0;
 }

@@ -24,11 +24,14 @@ struct csv : public printer_base
     : m_filename(std::move(c.m_filename)),
       m_delimiter(c.m_delimiter)
     {
-        c.m_ofile.close();
     }
 
     void on_start(const suite_base& s) override
     {
+        // Not the first run(): header has already been written, return
+        if (m_ofile.is_open())
+            return;
+
         m_ofile.open(m_filename.c_str());
 
         if (!m_ofile.is_open())
