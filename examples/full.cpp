@@ -76,7 +76,7 @@ void foo()
                  std::vector<int> v;
                  v.push_back(1000);
              })
-        .set_printer<printer::console>()
+        .set_printer<printer::console<>>()
         .on_test_complete([](const std::string& name, const test_report& r)
                           {
 

@@ -24,8 +24,17 @@ namespace detail
 
         return time_per_task;
     }
+
+    template <typename _DurationT> struct to_str {};
+    template <> struct to_str<std::chrono::nanoseconds>  { static constexpr const char* value = "ns"; };
+    template <> struct to_str<std::chrono::microseconds> { static constexpr const char* value = "us"; };
+    template <> struct to_str<std::chrono::milliseconds> { static constexpr const char* value = "ns"; };
+    template <> struct to_str<std::chrono::seconds>      { static constexpr const char* value = " s"; };
+    template <> struct to_str<std::chrono::minutes>      { static constexpr const char* value = "mn"; };
+    template <> struct to_str<std::chrono::hours>        { static constexpr const char* value = " h"; };
 }
 
+template <typename _DurationT = std::chrono::nanoseconds>
 struct console : public printer_base
 {
     void on_start(const suite_base& s) override
@@ -39,7 +48,7 @@ struct console : public printer_base
 
         m_first_col_width = it->get().size();
 
-        int width = std::fprintf(stdout, "%-*s %16s", m_first_col_width, "Test", "Time (ns)");
+        int width = std::fprintf(stdout, "%-*s %12s (%s)", m_first_col_width, "Test", "Time", detail::to_str<_DurationT>::value);
 
         std::vector<int> papi_events = s.papi_events();
         for (int event : papi_events)
@@ -53,7 +62,7 @@ struct console : public printer_base
 
     void on_test_complete(const std::string& name, const test_report& r) override
     {
-        std::string time_per_task = detail::to_string_with_commas(r.time_per_task().count());
+        std::string time_per_task = detail::to_string_with_commas(std::chrono::duration_cast<_DurationT>(r.time_per_task()).count());
 
         std::fprintf(stdout, "%-*s %16s", m_first_col_width, name.c_str(), time_per_task.c_str());
 

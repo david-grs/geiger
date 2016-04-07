@@ -22,7 +22,7 @@ int main()
           });
 
     // Redirection of each test result to the "console" printer
-    s.set_printer<geiger::printer::console>();
+    s.set_printer<geiger::printer::console<>>();
 
     // Run all benchmarks
     s.run();
