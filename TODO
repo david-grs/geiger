@@ -4,3 +4,4 @@
 - passing function, with fixed arguments, e.g. s.add("f(5,6)", &f, 5, 6)
 - passing function with generated arguments
 - (multiple) printers via ctor
+- console_printer: better uunits for hwd counter
