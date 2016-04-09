@@ -78,7 +78,8 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(std::chrono::milliseconds d
 {
     test_report r = run(1);
 
-    assert(r.iteration_count() == 1);
+    assert((r.iteration_count() == 1 && sizeof...(_PAPIWrappersT) == 0)
+           || r.iteration_count() == sizeof...(_PAPIWrappersT));
 
     auto time_elapsed = r.time_per_task();
     if (time_elapsed > duration)
