@@ -1,5 +1,7 @@
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <boost/fusion/algorithm/iteration/accumulate.hpp>
+#include <boost/fusion/include/accumulate.hpp>
 
 #include <iterator>
 
@@ -153,7 +155,10 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
         return {total_iterations, total_cycles};
     }
 
+    int hwd_counters = boost::fusion::accumulate(papi_wrappers, 0, [&](int count, auto& papi) { return count + papi.events_count; });
+
     std::vector<long long> counters;
+    counters.reserve(hwd_counters);
 
     boost::fusion::for_each(papi_wrappers, [&](auto& papi)
                             {
