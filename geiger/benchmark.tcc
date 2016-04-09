@@ -157,6 +157,8 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
     boost::fusion::for_each(papi_wrappers, [&](auto& papi)
                             {
+                                std::vector<long long> curr_counters(papi.events_count);
+
                                 for (int i = 0; i < batches; ++i)
                                 {
                                     papi.start();
@@ -167,10 +169,15 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
                                     total_cycles += cycles;
                                     next_iterations_count(cycles);
 
-                                    std::copy(papi.get_counters().begin(),
-                                              papi.get_counters().end(),
-                                              std::back_inserter(counters));
+                                    const auto& batch_counters = papi.get_counters();
+
+                                    for (int j = 0; j < (int)curr_counters.size(); ++j)
+                                        curr_counters[j] += batch_counters[j];
                                 }
+
+                                std::copy(curr_counters.begin(),
+                                          curr_counters.end(),
+                                          std::back_inserter(counters));
                             });
 
     return {total_iterations, total_cycles, std::move(counters)};
