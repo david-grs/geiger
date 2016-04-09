@@ -1,6 +1,8 @@
 #include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 
+#include <iterator>
+
 namespace geiger
 {
 
@@ -155,9 +157,6 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
     boost::fusion::for_each(papi_wrappers, [&](auto& papi)
                             {
-                                counters.resize(counters.size() + papi.get_counters().size());
-                                int j = counters.size() - papi.get_counters().size();
-
                                 for (int i = 0; i < batches; ++i)
                                 {
                                     papi.start();
@@ -168,10 +167,9 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
                                     total_cycles += cycles;
                                     next_iterations_count(cycles);
 
-                                    const auto& curr_counters = papi.get_counters();
-
-                                    for (int i = 0; i < curr_counters.size(); ++i)
-                                        counters[i + j] += curr_counters[i];
+                                    std::copy(papi.get_counters().begin(),
+                                              papi.get_counters().end(),
+                                              std::back_inserter(counters));
                                 }
                             });
 
