@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+#include <cmath>
 
 namespace geiger
 {
@@ -67,7 +68,10 @@ struct console : public printer_base
         std::fprintf(stdout, "%-*s %17s", m_first_col_width, name.c_str(), time_per_task.c_str());
 
         for (long long counter : r.papi_counters())
+        {
+            counter = std::llround(counter / double(r.iteration_count()));
             std::fprintf(stdout, " %16s", detail::to_string_with_commas(counter).c_str());
+        }
 
         std::cout << std::endl;
     }
