@@ -106,8 +106,8 @@ The output is now displaying the time, but also the total of each hardware event
 ```
 Test                     Time (ns)     PAPI_TOT_INS     PAPI_TOT_CYC      PAPI_BR_MSP
 -------------------------------------------------------------------------------------
-rand                           14    3,688,236,800    1,861,392,047        2,292,690
-vector push_back               49    5,137,901,412    1,976,327,294           10,467
+rand                            14               52               27                0
+vector push_back                53              253              101                0
 ```
   
 You can cover the events you want by defining your own PAPI wrapper. For example, if you are interested by events
