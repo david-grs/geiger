@@ -2,6 +2,11 @@ geiger
 =====
 A micro benchmark library in C++ that supports hardware performance counters.
 
+Why and what ?
+ - Because you cannot do a micro-benchmark by running _perf_
+ - Simple API, header-only library
+ - Each test is run either a number of iterations or a specified time
+
 
 Build & install
 ---------------
