@@ -97,24 +97,24 @@ A more advanced usage of geiger is to include hardware counters. This is done by
 template parameters list of *geiger::suite<>*:
 
 ```c++
-      // instr_profiler reports the number of instructions, cycles and mispredicted branches
-      suite<instr_profiler> s;
-      
-      // As before, adding some tests...
+      // cache_profiler reports the number of L1, L2 and L3 cache misses.
+      suite<cache_profiler> s;
+ 
+      s.add("linear walk", linear_walk())
+       .add("random walk", random_walk());
 
-      // Run all tests and measure hardware counters
       s.run();
 ```
 
-The output is now displaying the time, but also the total of each hardware events:
+The output is now also displaying the number of hardware events per test run. 
 
 ```
-Test                     Time (ns)     PAPI_TOT_INS     PAPI_TOT_CYC      PAPI_BR_MSP
--------------------------------------------------------------------------------------
-rand                            14               52               27                0
-vector push_back                53              253              101                0
+Test                Time (ns)      PAPI_L1_DCM      PAPI_L2_DCM      PAPI_L3_TCM
+--------------------------------------------------------------------------------
+linear walk                88                1                0                0
+random walk               613               64               64               55
 ```
-  
+
 You can cover the events you want by defining your own PAPI wrapper. For example, if you are interested by events
 around branch predictions:
 
