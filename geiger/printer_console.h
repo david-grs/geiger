@@ -64,7 +64,7 @@ struct console : public printer_base
     {
         std::string time_per_task = detail::to_string_with_commas(std::chrono::duration_cast<_DurationT>(r.time_per_task()).count());
 
-        std::fprintf(stdout, "%-*s %16s", m_first_col_width, name.c_str(), time_per_task.c_str());
+        std::fprintf(stdout, "%-*s %17s", m_first_col_width, name.c_str(), time_per_task.c_str());
 
         for (long long counter : r.papi_counters())
             std::fprintf(stdout, " %16s", detail::to_string_with_commas(counter).c_str());
