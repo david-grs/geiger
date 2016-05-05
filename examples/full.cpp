@@ -77,11 +77,11 @@ void foo()
                  v.push_back(1000);
              })
         .set_printer<printer::console<>>()
-        .on_test_complete([](const std::string& name, const test_report& r)
+        .on_test_complete([](const std::string&, const test_report&)
                           {
 
                           })
-        .on_complete([](const suite_report& r)
+        .on_complete([](const suite_report&)
                      {
                      //    for (const auto& p : r.tests)
                      //        std::cout << p.first << ":" << p.second.time_per_task().count() << "ns" << std::endl;
