@@ -1,11 +1,14 @@
 #include "printer.h"
 #include "benchmark.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include <string>
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
 #include <cmath>
+#include <cctype>
 
 namespace geiger
 {
@@ -24,6 +27,16 @@ namespace detail
             time_per_task.insert(pos, ",");
 
         return time_per_task;
+    }
+
+    inline void papi_better_event_name(std::string& name)
+    {
+        using namespace boost;
+
+        erase_first(name, "PAPI_");
+        replace_all(name, "_", " ");
+        erase_first(name, "TOT");
+        trim(name);
     }
 
     template <typename _DurationT> struct to_str {};
@@ -55,7 +68,9 @@ struct console : public printer_base
         for (int event : papi_events)
         {
             std::string event_name = get_papi_event_name(event);
-            width += std::fprintf(stdout, " %16s", event_name.c_str());
+            detail::papi_better_event_name(event_name);
+
+            width += std::fprintf(stdout, " %12s", event_name.c_str());
         }
 
         std::cout << "\n" << std::string(width, '-') << std::endl;
@@ -70,7 +85,7 @@ struct console : public printer_base
         for (long long counter : r.papi_counters())
         {
             counter = std::llround(counter / double(r.iteration_count()));
-            std::fprintf(stdout, " %16s", detail::to_string_with_commas(counter).c_str());
+            std::fprintf(stdout, " %12s", detail::to_string_with_commas(counter).c_str());
         }
 
         std::cout << std::endl;
