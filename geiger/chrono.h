@@ -57,11 +57,7 @@ inline void init()
 
 struct chrono
 {
-    chrono()
-    {
-        if (detail::tsc::get_freq_ghz() == .0)
-            throw std::runtime_error("benchmark not initialized");
-    }
+    chrono() =default;
 
     void start()
     {
