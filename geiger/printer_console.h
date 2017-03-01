@@ -61,8 +61,9 @@ struct console : public printer_base
                                 });
 
         m_first_col_width = it->get().size();
+        const std::string time_header = detail::to_str<_DurationT>::value + std::string(" / iteration");
 
-        int width = std::fprintf(stdout, "%-*s %12s (%s)", m_first_col_width, "Test", "Time", detail::to_str<_DurationT>::value);
+        int width = std::fprintf(stdout, "%-*s %17s %17s", m_first_col_width, "Test", "Iterations", time_header.c_str());
 
         std::vector<int> papi_events = s.papi_events();
         for (int event : papi_events)
@@ -79,13 +80,13 @@ struct console : public printer_base
     void on_test_complete(const std::string& name, const test_report& r) override
     {
         std::string time_per_task = detail::to_string_with_commas(std::chrono::duration_cast<_DurationT>(r.time_per_task()).count());
+        std::string iteration_count = detail::to_string_with_commas(r.iteration_count());
 
-        std::fprintf(stdout, "%-*s %17s", m_first_col_width, name.c_str(), time_per_task.c_str());
+        std::fprintf(stdout, "%-*s %17s %17s", m_first_col_width, name.c_str(), iteration_count.c_str(), time_per_task.c_str());
 
         for (long long counter : r.papi_counters())
         {
-            counter = std::llround(counter / double(r.iteration_count()));
-            std::fprintf(stdout, " %12s", detail::to_string_with_commas(counter).c_str());
+            std::fprintf(stdout, " %12.2f", counter / double(r.iteration_count()));
         }
 
         std::cout << std::endl;
