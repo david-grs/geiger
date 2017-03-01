@@ -140,21 +140,19 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
         }
     };
 
-    std::tuple<_PAPIWrappersT...> papi_wrappers;
     constexpr long papi_wrapppers_count = sizeof...(_PAPIWrappersT);
 
     int64_t total_cycles = 0;
     long total_iterations = 0;
 
 #ifndef USE_PAPI
-
-    assert(papi_wrapppers_count == 0);
-    papi_wrapppers_count = 0;
-
+    static_assert(papi_wrapppers_count == 0, "PAPI not supported");
 #endif
 
+#ifdef USE_PAPI
     if (papi_wrapppers_count == 0)
     {
+#endif
         for (int i = 0; i < batches; ++i)
         {
             int64_t cycles = run_benchmark();
@@ -165,10 +163,10 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
         }
 
         return {total_iterations, total_cycles};
+#ifdef USE_PAPI
     }
 
-#ifdef USE_PAPI
-
+    std::tuple<_PAPIWrappersT...> papi_wrappers;
     int hwd_counters = boost::fusion::accumulate(papi_wrappers, 0, [&](int count, auto& papi) { return count + papi.events_count; });
 
     std::vector<long long> counters;
