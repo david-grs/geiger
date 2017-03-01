@@ -1,6 +1,9 @@
 function(add_example name)
   add_executable(${name} ${name}.cpp)
-  target_link_libraries(${name} papi)
+  
+  if (USE_PAPI)
+    target_link_libraries(${name} papi)
+  endif()
 endfunction(add_example)
 
 add_example(simple)
