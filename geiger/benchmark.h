@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef USE_PAPI
 #include "papi.h"
+#endif
+
 #include "chrono.h"
 #include "printer.h"
 
@@ -105,7 +108,10 @@ struct suite_base
     virtual suite_base& run(long iterations) =0;
 
     virtual std::vector<std::reference_wrapper<const std::string>> test_names() const = 0;
+
+#ifdef USE_PAPI
     virtual std::vector<int> papi_events() const = 0;
+#endif
 };
 
 template <typename... _PAPIWrappersT>
@@ -115,7 +121,10 @@ struct suite : public suite_base
     suite& run(long iterations) override;
 
     std::vector<std::reference_wrapper<const std::string>> test_names() const override;
+
+#ifdef USE_PAPI
     std::vector<int> papi_events() const override;
+#endif
 
     typedef std::function<void(const std::string&, const test_report&)> test_complete_t;
     typedef std::function<void(const suite_report&)> suite_complete_t;

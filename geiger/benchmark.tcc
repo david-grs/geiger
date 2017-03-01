@@ -19,6 +19,8 @@ std::vector<std::reference_wrapper<const std::string>> suite<_PAPIWrappersT...>:
     return v;
 }
 
+#ifdef USE_PAPI
+
 template <typename... _PAPIWrappersT>
 std::vector<int> suite<_PAPIWrappersT...>::papi_events() const
 {
@@ -33,6 +35,8 @@ std::vector<int> suite<_PAPIWrappersT...>::papi_events() const
 
     return v;
 }
+
+#endif
 
 template <typename... _PAPIWrappersT>
 suite<_PAPIWrappersT...>& suite<_PAPIWrappersT...>::run(std::chrono::milliseconds duration)
@@ -142,6 +146,13 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
     int64_t total_cycles = 0;
     long total_iterations = 0;
 
+#ifndef USE_PAPI
+
+    assert(papi_wrapppers_count == 0);
+    papi_wrapppers_count = 0;
+
+#endif
+
     if (papi_wrapppers_count == 0)
     {
         for (int i = 0; i < batches; ++i)
@@ -155,6 +166,8 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
         return {total_iterations, total_cycles};
     }
+
+#ifdef USE_PAPI
 
     int hwd_counters = boost::fusion::accumulate(papi_wrappers, 0, [&](int count, auto& papi) { return count + papi.events_count; });
 
@@ -187,6 +200,8 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
                             });
 
     return {total_iterations, total_cycles, std::move(counters)};
+
+#endif
 }
 
 }

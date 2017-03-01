@@ -38,12 +38,17 @@ struct csv : public printer_base
             throw std::runtime_error("geiger::printer::csv: unable to open file " + m_filename);
 
         m_ofile << "#Test" << m_delimiter << "Time" << m_delimiter << "Iterations";
+        (void)s;
+        
+#ifdef USE_PAPI
 
         std::vector<int> papi_events = s.papi_events();
         for (auto it = papi_events.begin(); it != papi_events.end(); ++it)
         {
             m_ofile << m_delimiter << get_papi_event_name(*it);
         }
+
+#endif
     }
 
     void on_test_complete(const std::string& name, const test_report& r) override

@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef USE_PAPI
 #include "papi.h"
+#endif
+
 #include "chrono.h"
 #include "printer.h"
 #include "benchmark.h"

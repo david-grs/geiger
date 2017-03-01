@@ -65,6 +65,7 @@ struct console : public printer_base
 
         int width = std::fprintf(stdout, "%-*s %17s %17s", m_first_col_width, "Test", "Iterations", time_header.c_str());
 
+#ifdef USE_PAPI
         std::vector<int> papi_events = s.papi_events();
         for (int event : papi_events)
         {
@@ -73,6 +74,7 @@ struct console : public printer_base
 
             width += std::fprintf(stdout, " %12s", event_name.c_str());
         }
+#endif
 
         std::cout << "\n" << std::string(width, '-') << std::endl;
     }
