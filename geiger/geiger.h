@@ -6,3 +6,14 @@
 #include "benchmark.h"
 #include "printer_console.h"
 #include "printer_csv.h"
+
+namespace geiger
+{
+
+inline void init()
+{
+    chrono::init();
+}
+
+}
+

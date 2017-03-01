@@ -117,7 +117,7 @@ test_report test<_CallableT, _PAPIWrappersT...>::run(long iterations,
 
     auto run_benchmark = [&]() -> auto
     {
-        c.restart();
+        c.start();
 
         for (long i = 0; i < iterations; ++i)
             m_callable();

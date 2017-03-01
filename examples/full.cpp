@@ -1,7 +1,7 @@
-#include "geiger/benchmark.h"
-#include "geiger/printer_console.h"
+#include "geiger/geiger.h"
 
-extern "C" {
+extern "C"
+{
     #include <unistd.h>
     #include <sys/time.h>
 }
