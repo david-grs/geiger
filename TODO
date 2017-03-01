@@ -1,4 +1,3 @@
-- be able to use it without the papi dep if not using the PAPI counters, with a #ifdef
 - console_printer: more info when measuring related hwd counters, e.g. instruction per cycle
 - multiplexing on hwd counters
 - more examples / doc
