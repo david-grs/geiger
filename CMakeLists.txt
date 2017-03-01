@@ -7,6 +7,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 option(USE_PAPI "USE_PAPI" ON)
 
+if (USE_PAPI)
+  add_definitions("-DUSE_PAPI")
+endif()
+
 include_directories(.)
 
 add_subdirectory(geiger)

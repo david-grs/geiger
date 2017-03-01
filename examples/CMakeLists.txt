@@ -5,6 +5,9 @@ endfunction(add_example)
 
 add_example(simple)
 add_example(simple_csv)
-add_example(hardware_counters)
-add_example(walk)
-add_example(full)
+
+if (USE_PAPI)
+  add_example(hardware_counters)
+  add_example(walk)
+  add_example(full)
+endif()
